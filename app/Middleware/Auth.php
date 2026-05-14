@@ -1,7 +1,7 @@
 <?php
 // Захищає маршрути від неавторизованого доступу
 // виулиувється на початку конструкторів, де вимагається авторизація
-class AuthMiddleware
+class Auth
 {
     public static function handle()
     {

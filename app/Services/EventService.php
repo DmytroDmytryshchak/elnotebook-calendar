@@ -4,11 +4,13 @@ class EventService
 {
     private $eventRepository;
     private $eventValidator;
+    private $notificationService;
 
-    public function __construct($eventRepository, $eventValidator)
+    public function __construct($eventRepository, $eventValidator, $notificationService)
     {
         $this->eventRepository = $eventRepository;
         $this->eventValidator  = $eventValidator;
+        $this->notificationService = $notificationService;
     }
 
     public function getEventsForMonth($userId, $year, $month)
@@ -45,6 +47,8 @@ class EventService
     {
         $this->eventValidator->validate($data);
 
+        $startsAt = $this->normalizeDateTime($data['starts_at']);
+
         $eventId = $this->eventRepository->create(array(
             'user_id'     => $userId,
             'title'       => trim($data['title']),
@@ -55,6 +59,8 @@ class EventService
             'all_day'     => isset($data['all_day']) && $data['all_day'] === '1',
         ));
 
+        $this->notificationService->createForEvent($eventId, $userId, $startsAt);
+
         return $this->getEventById($eventId, $userId);
     }
 
@@ -64,6 +70,8 @@ class EventService
 
         $this->eventValidator->validate($data);
 
+        $startsAt = $this->normalizeDateTime($data['starts_at']);
+
         $this->eventRepository->update($eventId, array(
             'title'       => trim($data['title']),
             'description' => isset($data['description']) ? trim($data['description']) : '',
@@ -72,6 +80,9 @@ class EventService
             'ends_at'     => $this->normalizeDateTime($data['ends_at']),
             'all_day'     => isset($data['all_day']) && $data['all_day'] === '1',
         ));
+
+        $this->notificationService->deleteForEvent($eventId);
+        $this->notificationService->createForEvent($eventId, $userId, $startsAt);
 
         return $this->getEventById($eventId, $userId);
     }

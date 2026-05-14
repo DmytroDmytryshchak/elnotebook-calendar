@@ -64,7 +64,7 @@
     // Перезавантажує сторінку з тим самим місяцем/роком
     // Викликається після збереження або видалення події
     window.reloadCalendar = function () {
-        window.location.href = '/calendar?year=' + CALENDAR_YEAR
+        window.location.href = '/final_project/Public/calendar?year=' + CALENDAR_YEAR
             + '&month=' + CALENDAR_MONTH;
     };
 

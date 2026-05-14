@@ -6,7 +6,7 @@ class NotificationController extends Controller
 
     public function __construct()
     {
-        AuthMiddleware::handle();
+        Auth::handle();
 
         $this->notificationService = new NotificationService(
             new NotificationRepository()
@@ -21,9 +21,9 @@ class NotificationController extends Controller
 
         $rows = $this->notificationService->getPendingNotifications($userId);
 
-        $notifications = array();
+        $notification = array();
         foreach ($rows as $row) {
-            $notifications[] = array(
+            $notification[] = array(
                 'id'              => (int) $row['id'],
                 'event_id'        => (int) $row['event_id'],
                 'event_title'     => $row['event_title'],
@@ -34,8 +34,8 @@ class NotificationController extends Controller
 
         $this->json(array(
             'success'       => true,
-            'notifications' => $notifications,
-            'count'         => count($notifications),
+            'notification' => $notification,
+            'count'         => count($notification),
         ));
     }
 

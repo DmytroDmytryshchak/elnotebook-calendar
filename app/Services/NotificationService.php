@@ -1,9 +1,9 @@
 <?php
 
-class NotificationService implements NotifiableInterface
+class NotificationService implements NotificationInterface
 {
     // За скільки хвилин до події створювати сповіщення
-    const MINUTES_BEFORE = 15;
+    const MINUTES_BEFORE = 1;
 
     private $notificationRepository;
 
@@ -41,25 +41,18 @@ class NotificationService implements NotifiableInterface
     }
 
     // Створює сповіщення для щойно створеної події
-    // trigger_at = starts_at мінус MINUTES_BEFORE хвилин
     public function createForEvent($eventId, $userId, $startsAt)
     {
-        $triggerTimestamp = strtotime($startsAt) - (self::MINUTES_BEFORE * 60);
+        $dt = new DateTime($startsAt, new DateTimeZone('Europe/Bratislava'));
+        $dt->modify('-' . self::MINUTES_BEFORE . ' minutes');
 
-        // Не створюємо сповіщення якщо час вже минув
-        if ($triggerTimestamp <= time()) {
-            return null;
-        }
+        $triggerAt = $dt->format('Y-m-d H:i:s');
 
-        $triggerAt = date('Y-m-d H:i:s', $triggerTimestamp);
-
-        $id = $this->notificationRepository->create(array(
+        return $this->notificationRepository->create([
             'user_id'    => $userId,
             'event_id'   => $eventId,
             'trigger_at' => $triggerAt,
-        ));
-
-        return $id;
+        ]);
     }
 
     // Повертає кількість непереглянутих сповіщень для дзвіночка

@@ -16,7 +16,7 @@ loadAppFile('Exceptions/ValidationException.php');
 
 // Interfaces
 loadAppFile('Interfaces/RepositoryInterface.php');
-loadAppFile('Interfaces/NotifiableInterface.php');
+loadAppFile('Interfaces/NotificationInterface.php');
 
 // Core
 loadAppFile('Core/Database.php');
@@ -26,8 +26,8 @@ loadAppFile('Core/Controller.php');
 loadAppFile('Core/Router.php');
 
 // Middleware
-loadAppFile('Middleware/AuthMiddleware.php');
-loadAppFile('Middleware/CsrfMiddleware.php');
+loadAppFile('Middleware/Auth.php');
+loadAppFile('Middleware/Csrf.php');
 
 // Models
 loadAppFile('Models/User.php');
@@ -62,12 +62,13 @@ error_reporting($config['debug'] ? E_ALL : 0);
 
 session_start();
 
+
 // ── Dispatch ──────────────────────────────────────────────────────────────────
 $request = new Request();
 $router  = new Router();
 
-CsrfMiddleware::generateToken();
-CsrfMiddleware::validate();
+Csrf::generateToken();
+Csrf::validate();
 
 require BASE_PATH . '/routes/web.php';
 

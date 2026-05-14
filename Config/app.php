@@ -6,6 +6,6 @@ return [
     'name'     => 'Calendar Notebook',
     'env'      => 'development',
     'debug'    => true,
-    'timezone' => 'Europe/Kyiv',
+    'timezone' => 'Europe/Bratislava',
     'locale'   => 'uk_UA',
 ];

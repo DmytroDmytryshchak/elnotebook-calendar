@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function showLogin($request)
     {
         if ($this->isAuthenticated()) {
-            $this->redirect('/calendar');
+            $this->redirect('/final_project/Public/calendar');
         }
 
         $errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : array();
@@ -36,19 +36,19 @@ class AuthController extends Controller
             );
 
             $this->authService->startSession($user);
-            $this->redirect('/calendar');
+            $this->redirect('/final_project/Public/calendar');
 
         } catch (ValidationException $e) {
             $_SESSION['errors'] = $e->errors();
             $_SESSION['old']    = array('email' => $request->post('email', ''));
-            $this->redirect('/login');
+            $this->redirect('/final_project/Public/login');
         }
     }
 
     public function showRegister($request)
     {
         if ($this->isAuthenticated()) {
-            $this->redirect('/calendar');
+            $this->redirect('/final_project/Public/calendar');
         }
 
         $errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : array();
@@ -67,7 +67,7 @@ class AuthController extends Controller
         try {
             $user = $this->authService->register($request->all());
             $this->authService->startSession($user);
-            $this->redirect('/calendar');
+            $this->redirect('/final_project/Public/calendar');
 
         } catch (ValidationException $e) {
             $_SESSION['errors'] = $e->errors();
@@ -75,13 +75,13 @@ class AuthController extends Controller
                 'name'  => $request->post('name', ''),
                 'email' => $request->post('email', ''),
             );
-            $this->redirect('/register');
+            $this->redirect('/final_project/Public/register');
         }
     }
 
     public function logout($request)
     {
         $this->authService->logout();
-        $this->redirect('/login');
+        $this->redirect('/final_project/Public/login');
     }
 }

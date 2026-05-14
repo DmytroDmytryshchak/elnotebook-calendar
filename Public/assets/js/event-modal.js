@@ -55,7 +55,7 @@ var EventModal = (function () {
         show();
 
         // Завантажуємо дані події з сервера
-        Ajax.get('/events/' + eventId, function (err, data) {
+        Ajax.get('/final_project/Public/events/' + eventId, function (err, data) {
             showLoading(false);
 
             if (err || !data.success) {
@@ -86,11 +86,11 @@ var EventModal = (function () {
         var id   = fieldId.value;
 
         if (id) {
-            Ajax.put('/events/' + id, data, function (err, response) {
+            Ajax.put('/final_project/Public/events/' + id, data, function (err, response) {
                 handleSaveResponse(err, response);
             });
         } else {
-            Ajax.post('/events', data, function (err, response) {
+            Ajax.post('/final_project/Public/events', data, function (err, response) {
                 handleSaveResponse(err, response);
             });
         }
@@ -116,7 +116,7 @@ var EventModal = (function () {
 
         if (!confirm('Delete this event?')) { return; }
 
-        Ajax.delete('/events/' + id, function (err, response) {
+        Ajax.delete('/final_project/Public/events/' + id, function (err, response) {
             if (err) {
                 showErrors('Failed to delete event.');
                 return;
@@ -134,18 +134,39 @@ var EventModal = (function () {
         fieldColor.value       = event.color;
         fieldAllDay.checked    = event.all_day == 1;
 
-        fieldStarts.value = mysqlToInputFormat(event.starts_at);
-        fieldEnds.value   = mysqlToInputFormat(event.ends_at);
+        if (event.all_day == 1) {
+
+            fieldStarts.value = event.starts_at.substring(0, 10);
+            fieldEnds.value   = event.ends_at.substring(0, 10);
+
+        } else {
+
+            fieldStarts.value = mysqlToInputFormat(event.starts_at);
+            fieldEnds.value   = mysqlToInputFormat(event.ends_at);
+        }
 
         toggleTimeFields(fieldAllDay.checked);
     }
 
     function getFormData() {
+        var starts = fieldStarts.value;
+        var ends   = fieldEnds.value;
+
+        // якщо all day і дати однакові —
+        // додаємо +1 день до ends_at
+        if (fieldAllDay.checked && starts === ends) {
+
+            var endDate = new Date(ends);
+            endDate.setDate(endDate.getDate() + 1);
+
+            ends = endDate.toISOString().split('T')[0];
+        }
+
         return {
             title:       fieldTitle.value,
             description: fieldDescription.value,
-            starts_at:   fieldStarts.value,
-            ends_at:     fieldEnds.value,
+            starts_at:   starts,
+            ends_at:     ends,
             color:       fieldColor.value,
             all_day:     fieldAllDay.checked ? '1' : '0'
         };

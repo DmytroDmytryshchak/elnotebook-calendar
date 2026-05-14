@@ -295,7 +295,74 @@ $this->eventService = new EventService(
     new NotificationService(new NotificationRepository())
 );
 ```
+
+---
+
+## Refactoring Techniques
+
+### 1. Extract Class
+
+The initial version mixed routing, session handling, CSRF validation, and dispatching all inside `index.php`. These responsibilities were extracted into dedicated classes: `Router` (route matching and dispatch), `Csrf` (token generation and validation), `Auth` (session guard), and `Request` / `Response` (HTTP abstraction). Each extracted class now has a single, focused purpose.
+
+### 2. Extract Method
+
+Long methods were broken into smaller, named helpers to improve readability. In `EventService`, date normalisation was extracted into a private `normalizeDateTime()` method and reused by both `createEvent()` and `updateEvent()` instead of duplicating the parsing logic inline. In `EventValidator`, the date format check was extracted into `isValidDatetime()` and called from multiple validation rules.
+
+```php
+// Before: date parsing duplicated in createEvent() and updateEvent()
+// After: extracted once and reused
+private function normalizeDateTime($value)
+{
+    $formats = ['Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d'];
+    foreach ($formats as $format) {
+        $dt = DateTime::createFromFormat($format, $value);
+        if ($dt !== false) return $dt->format('Y-m-d H:i:s');
+    }
+    return $value;
+}
+```
+
+### 3. Replace Magic Number with Symbolic Constant
+
+The notification lead time was originally an inline integer scattered across the scheduling logic. It was extracted into a named class constant `MINUTES_BEFORE = 1` in `NotificationService`, making the intent self-documenting and the value easy to change in one place.
+
+```php
+// Before: $dt->modify('-1 minutes');
+// After:
+const MINUTES_BEFORE = 1;
+$dt->modify('-' . self::MINUTES_BEFORE . ' minutes');
+```
+
+### 4. Encapsulate Field
+
+All fields in the `Event` and `User` model classes are declared `private`. Direct access to raw properties from outside the class is impossible — all reads go through dedicated getters (`getId()`, `getTitle()`, `getStartsAt()`, etc.). This ensures that no other layer can accidentally mutate model state, and that type coercions (e.g. casting `id` to `int` and `all_day` to `bool`) are enforced once in the constructor rather than scattered across the codebase.
+
+```php
+// app/Models/Event.php
+class Event
+{
+    private $id;
+    private $title;
+    private $startsAt;
+    private $allDay;
+    // ...
  
+    public function __construct($id, ..., $allDay, ...)
+    {
+        $this->id     = (int) $id;    // type coercion enforced once
+        $this->allDay = (bool) $allDay;
+    }
+ 
+    public function getId()      { return $this->id; }
+    public function getTitle()   { return $this->title; }
+    public function isAllDay()   { return $this->allDay; }
+}
+```
+
+### 5. Separate Query from Modifier
+
+Repository methods were split along read / write lines. Read methods (`findById`, `findAll`, `findByUserAndDateRange`, `findPending`) return data and have no side effects. Write methods (`create`, `update`, `delete`, `markAllSeenByUser`) mutate state and return only a boolean success flag. This separation makes each method's intent immediately clear and prevents accidental side effects in query paths.
+
 ---
 
 ## Database Schema

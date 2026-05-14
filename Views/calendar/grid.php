@@ -16,7 +16,7 @@ $todayStr = date('Y-m-d');
 
 <div class="calendar-header">
     <div class="calendar-nav">
-        <a href="/calendar?year=<?php echo $prevYear; ?>&month=<?php echo $prevMonth; ?>"
+        <a href="/final_project/Public/calendar?year=<?php echo $prevYear; ?>&month=<?php echo $prevMonth; ?>"
            class="btn btn-outline btn-sm">← Prev</a>
 
         <h2 class="calendar-title">
@@ -24,7 +24,7 @@ $todayStr = date('Y-m-d');
             <?php echo $year; ?>
         </h2>
 
-        <a href="/calendar?year=<?php echo $nextYear; ?>&month=<?php echo $nextMonth; ?>"
+        <a href="/final_project/Public/calendar?year=<?php echo $nextYear; ?>&month=<?php echo $nextMonth; ?>"
            class="btn btn-outline btn-sm">Next →</a>
     </div>
 
@@ -70,7 +70,7 @@ $todayStr = date('Y-m-d');
                 <!-- Події цього дня -->
                 <div class="day-events">
                     <?php foreach ($dayEvents as $event): ?>
-                        <?php require BASE_PATH . '/views/partials/event-chip.php'; ?>
+                        <?php require BASE_PATH . '/Views/part/event-chip.php'; ?>
                     <?php endforeach; ?>
                 </div>
 

@@ -1,7 +1,7 @@
 <?php
 // Захист від Cross-Site Request Forgery атак
 // при кожному запиті генеруємо токун, який зберігається в сесії
-class CsrfMiddleware
+class Csrf
 {
     public static function generateToken()
     {

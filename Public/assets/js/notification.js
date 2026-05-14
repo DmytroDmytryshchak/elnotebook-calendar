@@ -38,10 +38,10 @@
             if (err || !data.success) { return; }
 
             updateBadge(data.count);
-            updateDropdown(data.notifications);
+            updateDropdown(data.notification);
 
-            for (var i = 0; i < data.notifications.length; i++) {
-                var notif = data.notifications[i];
+            for (var i = 0; i < data.notification.length; i++) {
+                var notif = data.notification[i];
                 if (!shownIds[notif.id]) {
                     shownIds[notif.id] = true;
                     showToast(notif);
@@ -62,17 +62,17 @@
         }
     }
 
-    function updateDropdown(notifications) {
+    function updateDropdown(notification) {
         if (!notifList) { return; }
 
-        if (notifications.length === 0) {
-            notifList.innerHTML = '<p class="notif-empty">No new notifications</p>';
+        if (notification.length === 0) {
+            notifList.innerHTML = '<p class="notif-empty">No new notification</p>';
             return;
         }
 
         var html = '';
-        for (var i = 0; i < notifications.length; i++) {
-            var n = notifications[i];
+        for (var i = 0; i < notification.length; i++) {
+            var n = notification[i];
             var timeStr = formatTime(n.event_starts_at);
 
             html += '<div class="notif-item" data-id="' + n.id + '">';

@@ -28,7 +28,7 @@ class NotificationRepository implements RepositoryInterface
     // Знайти всі непереглянуті сповіщення юзера що вже настав час показати
     public function findPending($userId)
     {
-        $now  = date('Y-m-d H:i:s');
+        $now = (new DateTime('now', new DateTimeZone('Europe/Bratislava')))->format('Y-m-d H:i:s');
         $stmt = $this->db->prepare(
             'SELECT n.*, e.title AS event_title, e.starts_at AS event_starts_at
              FROM notifications n

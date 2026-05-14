@@ -6,11 +6,12 @@ class EventController extends Controller
 
     public function __construct()
     {
-        AuthMiddleware::handle();
+        Auth::handle();
 
         $this->eventService = new EventService(
             new EventRepository(),
-            new EventValidator()
+            new EventValidator(),
+            new NotificationService(new NotificationRepository())
         );
     }
 
